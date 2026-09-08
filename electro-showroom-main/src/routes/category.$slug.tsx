@@ -2,14 +2,17 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { byCategory, categories, type CategorySlug } from "@/lib/products";
+import { byCategory } from "@/lib/catalog";
+import type { CategorySlug } from "@/data/types";
 import { useReducedMotion, useScrollProgress } from "@/lib/motion";
+import { getStoreContent } from "@/server-fns/content";
 
 export const Route = createFileRoute("/category/$slug")({
-  loader: ({ params }) => {
-    const category = categories.find((c) => c.slug === params.slug);
+  loader: async ({ params }) => {
+    const content = await getStoreContent();
+    const category = content.categories.find((c) => c.slug === params.slug);
     if (!category) throw notFound();
-    return { category };
+    return { category, products: content.products };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -34,14 +37,13 @@ export const Route = createFileRoute("/category/$slug")({
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
 
 function CategoryPage() {
-  const { slug } = Route.useParams();
-  const category = categories.find((c) => c.slug === slug)!;
+  const { category, products } = Route.useLoaderData();
   const [sort, setSort] = useState<SortKey>("featured");
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
   const reduced = useReducedMotion();
   const p = reduced ? 0 : progress;
 
-  const items = [...byCategory(category.slug as CategorySlug)].sort((a, b) => {
+  const items = [...byCategory(products, category.slug as CategorySlug)].sort((a, b) => {
     if (sort === "price-asc") return a.price - b.price;
     if (sort === "price-desc") return b.price - a.price;
     if (sort === "rating") return b.rating - a.rating;

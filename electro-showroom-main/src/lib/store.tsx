@@ -7,7 +7,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getProduct, type Product } from "./products";
+import type { Product } from "@/data/types";
+import { getProduct } from "./catalog";
+import { useStoreContent } from "./content-store";
 
 export type CartLine = {
   key: string;
@@ -48,6 +50,7 @@ const StoreContext = createContext<StoreApi | null>(null);
 const KEY = "electro-prime-store-v1";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const { content } = useStoreContent();
   const [lines, setLines] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
@@ -117,9 +120,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const detailed = useMemo(
     () =>
       lines
-        .map((line) => ({ line, product: getProduct(line.id) }))
+        .map((line) => ({ line, product: getProduct(content.products, line.id) }))
         .filter((x): x is { line: CartLine; product: Product } => Boolean(x.product)),
-    [lines],
+    [lines, content.products],
   );
 
   const value = useMemo<StoreApi>(

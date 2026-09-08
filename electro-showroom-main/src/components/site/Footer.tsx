@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { categories } from "@/lib/products";
+import { useStoreContent } from "@/lib/content-store";
 
 export function Footer() {
+  const { content } = useStoreContent();
+  const { categories } = content;
   return (
     <footer className="border-t border-border bg-surface/40">
       <div className="mx-auto max-w-[1600px] px-6 py-16 lg:px-12">

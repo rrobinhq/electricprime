@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { images, products, currency } from "@/lib/products";
+import { images } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { useStoreContent } from "@/lib/content-store";
 import { useReducedMotion, useScrollProgress } from "@/lib/motion";
 import { useStore } from "@/lib/store";
-
-const phone = products.find((p) => p.id === "prime-phone-17-pro")!;
 
 const FACES = [
   { name: "Rear", detail: "Four-sensor optical stack with a 120 mm tetraprism." },
@@ -14,15 +14,20 @@ const FACES = [
 
 /** Smartphone studio: colour + storage configuration with a rotating device. */
 export function PhoneStudio() {
+  const { content } = useStoreContent();
+  const phone = content.products.find((p) => p.id === "prime-phone-17-pro");
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
   const reduced = useReducedMotion();
   const { add } = useStore();
-  const [color, setColor] = useState(phone.colors[0]!.name);
-  const [storage, setStorage] = useState(phone.storage![1]!);
+  const [color, setColor] = useState(phone?.colors[0]?.name ?? "");
+  const [storage, setStorage] = useState(phone?.storage?.[1] ?? phone?.storage?.[0] ?? "");
   const [face, setFace] = useState(0);
 
   const p = reduced ? 0.3 : progress;
-  const hex = phone.colors.find((c) => c.name === color)!.hex;
+
+  if (!phone) return null;
+
+  const hex = phone.colors.find((c) => c.name === color)?.hex ?? phone.colors[0]?.hex ?? "#888888";
   const rotY = -18 + p * 120 + face * 42;
 
   return (
@@ -100,7 +105,7 @@ export function PhoneStudio() {
               <div>
                 <p className="eyebrow">Storage</p>
                 <div className="mt-3 flex flex-wrap gap-3">
-                  {phone.storage!.map((s) => (
+                  {(phone.storage ?? []).map((s) => (
                     <button
                       key={s}
                       type="button"

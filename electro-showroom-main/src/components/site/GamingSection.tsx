@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { currency, images, products } from "@/lib/products";
+import { images } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { useStoreContent } from "@/lib/content-store";
 import { range, useReducedMotion, useScrollProgress } from "@/lib/motion";
-
-const gaming = products.filter((p) => p.category === "gaming");
-const hero = gaming[0]!;
 
 /** Gaming: higher-energy scene, still engineered rather than RGB-drenched. */
 export function GamingSection() {
+  const { content } = useStoreContent();
+  const gaming = content.products.filter((p) => p.category === "gaming");
+  const hero = gaming[0];
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
   const reduced = useReducedMotion();
   const p = reduced ? 0.4 : progress;
   const t = range(p, 0.1, 0.8);
+
+  if (!hero) return null;
 
   return (
     <div ref={ref} className="relative h-[260vh] border-t border-border">

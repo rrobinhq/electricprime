@@ -1,6 +1,6 @@
 import { Minus, Plus, Trash2, X, ShieldCheck } from "lucide-react";
 import { useEffect } from "react";
-import { currency } from "@/lib/products";
+import { currency } from "@/lib/format";
 import { useStore } from "@/lib/store";
 
 export function CartDrawer() {

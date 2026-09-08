@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "@/lib/store";
+import { ContentProvider } from "@/lib/content-store";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { CartDrawer } from "@/components/site/CartDrawer";
@@ -101,6 +102,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
     ],
   }),
   shellComponent: RootShell,
@@ -128,16 +132,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreProvider>
-        <Header />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <main>
-          <Outlet />
-        </main>
-        <Footer />
-        <CartDrawer />
-        <SearchOverlay />
-      </StoreProvider>
+      <ContentProvider>
+        <StoreProvider>
+          <Header />
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <main>
+            <Outlet />
+          </main>
+          <Footer />
+          <CartDrawer />
+          <SearchOverlay />
+        </StoreProvider>
+      </ContentProvider>
     </QueryClientProvider>
   );
 }

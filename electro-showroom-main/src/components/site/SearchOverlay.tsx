@@ -1,15 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { currency, searchProducts } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { searchProducts } from "@/lib/catalog";
+import { useStoreContent } from "@/lib/content-store";
 import { useStore } from "@/lib/store";
 
 const SUGGESTIONS = ["laptop", "16GB RAM", "titanium phone", "wireless mouse", "gaming headset"];
 
 export function SearchOverlay() {
+  const { content } = useStoreContent();
   const { searchOpen, setSearchOpen } = useStore();
   const [q, setQ] = useState("");
-  const results = useMemo(() => searchProducts(q), [q]);
+  const results = useMemo(() => searchProducts(content.products, q), [content.products, q]);
 
   useEffect(() => {
     if (!searchOpen) return;

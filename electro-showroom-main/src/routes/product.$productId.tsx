@@ -12,15 +12,18 @@ import {
 import { useState } from "react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { currency, getProduct, products } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { getProduct } from "@/lib/catalog";
 import { useIsMobile, usePointer, useReducedMotion } from "@/lib/motion";
 import { useStore } from "@/lib/store";
+import { getStoreContent } from "@/server-fns/content";
 
 export const Route = createFileRoute("/product/$productId")({
-  loader: ({ params }) => {
-    const product = getProduct(params.productId);
+  loader: async ({ params }) => {
+    const content = await getStoreContent();
+    const product = getProduct(content.products, params.productId);
     if (!product) throw notFound();
-    return { product };
+    return { product, products: content.products };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -45,8 +48,7 @@ export const Route = createFileRoute("/product/$productId")({
 const VIEWS = ["Front", "Angle", "Side", "Rear"] as const;
 
 function ProductPage() {
-  const { productId } = Route.useParams();
-  const product = getProduct(productId)!;
+  const { product, products } = Route.useLoaderData();
   const { add, toggleWish, wishlist, toggleCompare, compare } = useStore();
   const reduced = useReducedMotion();
   const mobile = useIsMobile();

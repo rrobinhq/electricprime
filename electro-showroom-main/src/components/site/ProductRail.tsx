@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import type { Product } from "@/lib/products";
+import type { Product } from "@/data/types";
 import { ProductCard } from "./ProductCard";
 import { Reveal } from "./Reveal";
 

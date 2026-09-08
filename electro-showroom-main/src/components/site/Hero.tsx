@@ -1,15 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowDown } from "lucide-react";
-import { images, products, currency } from "@/lib/products";
+import { images } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { useStoreContent } from "@/lib/content-store";
 import { useIsMobile, usePointer, useReducedMotion, useScrollProgress, range } from "@/lib/motion";
-
-const hero = products[0]!;
 
 /**
  * Hero: the flagship laptop is pinned in the stage while the environment,
  * copy and specification callouts transform around it on scroll.
  */
 export function Hero() {
+  const { content } = useStoreContent();
+  const hero = content.products[0];
   const { ref: stageRef, progress } = useScrollProgress<HTMLDivElement>();
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
@@ -25,11 +27,13 @@ export function Hero() {
   const scale = 1 + enter * 0.12 - exit * 0.28;
   const lift = enter * -40 + exit * -140;
 
+  if (!hero) return null;
+
   const callouts = [
-    { label: "Display", value: hero.specs["Display"]!, className: "left-0 top-[16%] text-left" },
-    { label: "Silicon", value: hero.specs["CPU"]!, className: "right-0 top-[30%] text-right" },
-    { label: "I/O", value: hero.specs["Ports"]!, className: "left-0 bottom-[24%] text-left" },
-    { label: "Mass", value: hero.specs["Weight"]!, className: "right-0 bottom-[16%] text-right" },
+    { label: "Display", value: hero.specs["Display"] ?? "—", className: "left-0 top-[16%] text-left" },
+    { label: "Silicon", value: hero.specs["CPU"] ?? "—", className: "right-0 top-[30%] text-right" },
+    { label: "I/O", value: hero.specs["Ports"] ?? "—", className: "left-0 bottom-[24%] text-left" },
+    { label: "Mass", value: hero.specs["Weight"] ?? "—", className: "right-0 bottom-[16%] text-right" },
   ];
 
   return (

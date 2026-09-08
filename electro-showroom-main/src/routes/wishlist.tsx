@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ProductCard } from "@/components/site/ProductCard";
-import { getProduct } from "@/lib/products";
+import { getProduct } from "@/lib/catalog";
+import { useStoreContent } from "@/lib/content-store";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/wishlist")({
@@ -16,10 +17,11 @@ export const Route = createFileRoute("/wishlist")({
 });
 
 function WishlistPage() {
+  const { content } = useStoreContent();
   const { wishlist } = useStore();
-  const items = wishlist.map(getProduct).filter(Boolean) as NonNullable<
-    ReturnType<typeof getProduct>
-  >[];
+  const items = wishlist
+    .map((id) => getProduct(content.products, id))
+    .filter(Boolean) as NonNullable<ReturnType<typeof getProduct>>[];
 
   return (
     <div className="mx-auto max-w-[1600px] px-6 pb-28 pt-28 lg:px-12">

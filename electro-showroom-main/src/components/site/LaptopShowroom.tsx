@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { images, products, currency } from "@/lib/products";
+import { images } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { useStoreContent } from "@/lib/content-store";
 import { range, useReducedMotion, useScrollProgress } from "@/lib/motion";
-
-const laptop = products[0]!;
 
 const CHAPTERS = [
   {
@@ -33,6 +33,8 @@ const CHAPTERS = [
 
 /** Laptop showroom: the product stays anchored, the camera orbits on scroll. */
 export function LaptopShowroom() {
+  const { content } = useStoreContent();
+  const laptop = content.products[0];
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
   const reduced = useReducedMotion();
   const p = reduced ? 0.2 : progress;
@@ -41,6 +43,8 @@ export function LaptopShowroom() {
   const rotX = 10 - p * 16;
   const zoom = 1 + Math.sin(p * Math.PI) * 0.14;
   const active = CHAPTERS.reduce((acc, c, i) => (p >= c.at - 0.02 ? i : acc), 0);
+
+  if (!laptop) return null;
 
   return (
     <div ref={ref} className="relative h-[400vh] border-t border-border">

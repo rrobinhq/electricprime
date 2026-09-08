@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { currency, images, products } from "@/lib/products";
+import { images } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { useStoreContent } from "@/lib/content-store";
 import { range, useReducedMotion, useScrollProgress } from "@/lib/motion";
 import { useStore } from "@/lib/store";
 
@@ -13,14 +15,24 @@ const LAYERS = [
 
 /** Accessories: the workstation assembles itself layer by layer. */
 export function AccessoriesStack() {
+  const { content } = useStoreContent();
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
   const reduced = useReducedMotion();
   const { add } = useStore();
   const p = reduced ? 1 : progress;
 
-  const items = LAYERS.map((l) => ({ ...l, product: products.find((x) => x.id === l.id)! }));
+  const mapped = LAYERS.map((l) => ({
+    ...l,
+    product: content.products.find((x) => x.id === l.id),
+  }));
+  const items = mapped.filter(
+    (l): l is (typeof mapped)[number] & { product: NonNullable<(typeof mapped)[number]["product"]> } =>
+      Boolean(l.product),
+  );
   const activeIdx = items.reduce((acc, l, i) => (p >= l.at ? i : acc), 0);
-  const active = items[activeIdx]!;
+  const active = items[activeIdx];
+
+  if (!active) return null;
 
   return (
     <div ref={ref} className="relative h-[340vh] border-t border-border">

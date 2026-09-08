@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, Plus, Star, GitCompare } from "lucide-react";
 import { useRef, useState } from "react";
-import { currency, type Product } from "@/lib/products";
+import { currency } from "@/lib/format";
+import type { Product } from "@/data/types";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 

@@ -1,13 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { categories, currency, products } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { useStoreContent } from "@/lib/content-store";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-const featured = products.filter((p) => p.featured);
-
 export function Header() {
+  const { content } = useStoreContent();
+  const { categories, products } = content;
+  const featured = products.filter((p) => p.featured);
   const { count, setSearchOpen, setCartOpen, wishlist } = useStore();
   const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);

@@ -8,9 +8,13 @@ import { AccessoriesStack } from "@/components/site/AccessoriesStack";
 import { ProductRail } from "@/components/site/ProductRail";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { categories, products } from "@/lib/products";
+import { getStoreContent } from "@/server-fns/content";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const content = await getStoreContent();
+    return { categories: content.categories, products: content.products };
+  },
   head: () => ({
     meta: [
       { title: "Electro Prime — The Premium Technology Showroom" },
@@ -31,6 +35,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { categories, products } = Route.useLoaderData();
   const featured = products.filter((p) => p.featured);
   const newIn = products.slice(4, 12);
   const editorial = products.filter((p) => p.category === "monitors" || p.category === "audio");

@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { currency, getProduct, products } from "@/lib/products";
+import { currency } from "@/lib/format";
+import { getProduct } from "@/lib/catalog";
+import { useStoreContent } from "@/lib/content-store";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/compare")({
@@ -26,11 +28,13 @@ export const Route = createFileRoute("/compare")({
 const ROWS = ["CPU", "GPU", "RAM", "Storage", "Display", "Battery", "Camera", "Ports", "Weight", "Connectivity"];
 
 function ComparePage() {
+  const { content } = useStoreContent();
   const { compare, toggleCompare } = useStore();
   const [picker, setPicker] = useState(false);
-  const selected = compare.map(getProduct).filter(Boolean).slice(0, 3) as NonNullable<
-    ReturnType<typeof getProduct>
-  >[];
+  const selected = compare
+    .map((id) => getProduct(content.products, id))
+    .filter(Boolean)
+    .slice(0, 3) as NonNullable<ReturnType<typeof getProduct>>[];
 
   return (
     <div className="mx-auto max-w-[1600px] px-6 pb-28 pt-28 lg:px-12">
@@ -62,7 +66,7 @@ function ComparePage() {
 
       {picker && (
         <div className="mt-6 grid gap-2 border border-border bg-surface/50 p-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((p) => (
+          {content.products.map((p) => (
             <button
               key={p.id}
               type="button"
